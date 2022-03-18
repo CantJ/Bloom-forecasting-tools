@@ -1,1 +1,8 @@
-# Bloom-forecasting-tools
+# GoJelly: Tools to forecast and evaluate spatial and temporal patterns in Jellyfish bloom occurrence.
+This git repository is a companion to the manuscript *'Coupling hydrodynamic drifting simulations and seasonal demographics to forecast the occurrence of jellyfish blooms!'* (in Prep) Cant et al., and contains code that can be used to forecast patterns within the aggregation and movements of jellyfish populations. The functions outlined in this repository also underpin the Interactive GoJelly Risk Map which can be found at (***insert link***).
+
+Our motivation behind the development of these tools, was to introduce a framework that would serve as a basis for both predicting the appearance of jellyfish blooms, and by comparing these predictions with recorded sightings, resolving the potential location of undiscovered polyp beds. Observational field data on the spatial movements of jellyfish populations is lacking, in part due to their complex and cryptic life-cycle. Ultimately, this limits our understanding of the causes of bloom formation, and makes it difficult to mitigite the economic consequences of jellyfish blooms worldwide. We hope that by making these tools publicly available this work will encouraging the development of bloom forecasts, and help to guide the design of monitoring surveys to improve understanding of regional jellyfish populations.
+
+For further details on each function contained within this repository please check out the corresponding manuscript, and also don't hesitate to get in touch with **James Cant at jic2@st-andrews.ac.uk** with any queries.
+
+This work was carried out as part of the EU Horizon funded project GoJelly. Further information on this project can be found at **https://gojelly.eu/**.
