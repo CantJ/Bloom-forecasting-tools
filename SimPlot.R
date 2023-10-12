@@ -2,7 +2,6 @@
 
 # Primary Author: James Cant
 # Contact: james.cant91@gmail.com
-# Date last modified: March 2022
 # -----------------------------------------------------------------------------
 
 #----------------------------------------------------
@@ -10,110 +9,101 @@
 #----------------------------------------------------
 
 # Plotting function that will produce visual outputs using details returned by the JellySim function. 
-SimPlot <- function(mean_plots, conf_plots, dmax, confmax, rel_coords, xmx, xmn, ymx, ymn) {
+SimPlot <- function(meanRast, sdRast, sites, xmx, xmn, ymx, ymn) {
   
   # Load package dependencies
-  packages <- c("raster", "sf", "ggsn", "viridis", "ggplot2", "rnaturalearth",
-                "rnaturalearthdata", "scales")
+  packages <- c("terra", "sf", "viridis", "ggplot2", "rnaturalearth",
+                "rnaturalearthdata", "scales", 'plyr')
   lapply(packages, require, character.only = TRUE)
+  
+  # Estimate maximum recorded densities
+  dmax <- c(round_any(max(values(meanRast)), 0.01, f = ceiling),
+            round_any(max(values(sdRast)), 0.01, f = ceiling))
   
   # read in world shape file
   world <- ne_countries(scale = "medium", returnclass = "sf")
   
-  # take the plot stores and generate raster stacks consisting of all monthly rasters
-  mean_plot_stack <- raster::stack(mean_plots)
-  conf_plot_stack <- raster::stack(conf_plots)
-  
-  # For plotting, the raster stacks will need coercing into stacked data-frames
+  # For plotting, the raster layers will need coercing into stacked data-frames
   # Extract coordinates
-  mean_coords <- xyFromCell(mean_plot_stack, seq_len(ncell(mean_plot_stack)))
-  conf_coords <- xyFromCell(conf_plot_stack, seq_len(ncell(conf_plot_stack)))
+  plotCoords <- xyFromCell(meanRast, seq_len(ncell(meanRast)))
   # Extract density estimates
-  mean_values <- stack(as.data.frame(getValues(mean_plot_stack)))
-  conf_values <- stack(as.data.frame(getValues(conf_plot_stack)))
+  meanValues <- stack(as.data.frame(values(meanRast)))
+  sdValues <- stack(as.data.frame(values(sdRast)))
   # reassign variable names
-  names(mean_values) <- names(conf_values) <- c('value', 'Month')
-  levels(mean_values$Month) <- levels(conf_values$Month) <- month.name
-  colnames(mean_coords) <- colnames(conf_coords) <- c('long', 'lat')
+  names(meanValues) <- names(sdValues) <- c('Density', 'Month')
+  levels(meanValues$Month) <- levels(sdValues$Month) <- paste0('Month ', 1:nlyr(meanRast))
+  colnames(plotCoords) <- c('Lon', 'Lat')
   # And combine coordinates and values back together
-  mean_data <- cbind(mean_coords, mean_values)
-  conf_data <- cbind(conf_coords, conf_values)
+  meanDat <- cbind(plotCoords, meanValues)
+  sdDat <- cbind(plotCoords, sdValues)
   
   # format release site gps coordinates for plotting
-  rel_coords <- st_as_sf(rel_coords, coords = c("Lon", "Lat"), crs = 4326) # this crs code corresponds with a WGS84 projection
+  sites <- st_as_sf(sites, coords = c("Lon", "Lat"), crs = 4326) # this crs code corresponds with a WGS84 projection
   
   # define color scale
-  pal <- c("white", viridis(1000, direction = -1, option = "rocket"))
+  pal <- c("white", viridis(1000, direction = -1, option = "magma"))
   
   # Build plots
   # Mean density forecasts
-  mean_map <- ggplot() +
-    geom_tile(aes(x = long, y = lat, fill = value), data = mean_data) +
+  meanMap <- ggplot() +
+    geom_tile(aes(x = Lon, y = Lat, fill = Density), data = meanDat) +
     facet_wrap(~Month) +
     geom_sf(data = world, fill = "gray79", colour = "gray47") + 
-    geom_sf(data = rel_coords, fill = "black", size = 3.5, shape = 21) + # add location of selected release sites to the plot
+    geom_sf(data = sites, fill = "black", size = 3.5, shape = 21) + # add location of selected release sites to the plot
     coord_sf(xlim = c(xmn, xmx), ylim = c(ymn, ymx), expand = FALSE) +
     scale_fill_gradientn(colours = pal,
-                         breaks = c(0, dmax),
-                         labels = c("Low", "High"),
-                         limits = c(0, dmax), 
-                         guide = guide_colorbar(barwidth = 15, "cm")) + 
+                         breaks = c(0, dmax[1]),
+                         labels = c('Low', 'High'),
+                         limits = c(0, dmax[1]), 
+                         guide = guide_colorbar(barwidth = 15, "cm", ticks = F)) + 
     # define axis tick frequency
     scale_y_continuous(breaks = c(ymn+1,  ymx-2)) +
     scale_x_continuous(breaks = c(xmn+2,  xmx-2)) +
     theme_classic() +
     theme(legend.position="bottom", legend.title=element_blank(), legend.background = element_rect(fill = '#EFF0F8')) +
-    theme(axis.line.x = element_line(size = 1), axis.line.y = element_line(size = 1)) +
+    theme(axis.line.x = element_line(linewidth = 1), axis.line.y = element_line(linewidth = 1)) +
     theme(axis.text = element_text(size = 15), axis.title = element_text(size = 20)) +
-    #theme(axis.text.x = element_text(angle = 50, hjust = 1)) +
     theme(legend.text = element_text(size = 15)) +
     theme(strip.text = element_text(size = 15, colour = '#EFF0F8')) +
     theme(panel.spacing = unit(1, "lines")) +
-    theme(plot.background = element_rect(fill = '#EFF0F8', color = '#EFF0F8', size = 0), 
+    theme(plot.background = element_rect(fill = '#EFF0F8', color = '#EFF0F8', linewidth = 0), 
           panel.background = element_rect(fill = '#EFF0F8', color = '#EFF0F8')) +
     theme(strip.background = element_rect(fill = '#2C2D7C')) +
     xlab("\nLongitude") +
-    ylab("Latitude") +
-    theme(plot.title = element_text(size = 20)) +
-    ggsn::scalebar(data = mean_data, dist = 300, transform = TRUE, dist_unit = "km", model = "WGS84", height = 0.05, location = "bottomright",
-                   st.dist = 0.05, st.bottom = FALSE, st.size = 5, anchor = c(x = 29.0, y = 53.5),
-                   facet.var = "Month", facet.lev = "December")
+    ylab("Latitude\n") +
+    theme(plot.title = element_text(size = 20))
   
   # Forecast confidence
-  conf_map <- ggplot() +
-    geom_tile(aes(x = long, y = lat, fill = value), data = conf_data) +
+  sdMap <- ggplot() +
+    geom_tile(aes(x = Lon, y = Lat, fill = Density), data = sdDat) +
     facet_wrap(~Month) +
     geom_sf(data = world, fill = "gray79", colour = "gray47") + 
-    geom_sf(data = rel_coords, fill = "black", size = 3.5, shape = 21) +
+    geom_sf(data = sites, fill = "black", size = 3.5, shape = 21) +
     coord_sf(xlim = c(xmn, xmx), ylim = c(ymn, ymx), expand = FALSE) +
     scale_fill_gradientn(colours = pal,
-                         breaks = c(0, confmax),
-                         labels = c(0, format(confmax, scientific = FALSE)),
-                         limits = c(0, confmax), 
-                         guide = guide_colorbar(barwidth = 15, "cm")) + 
+                         breaks = c(0, dmax[2]),
+                         labels = c(0, format(dmax[2], scientific = FALSE)),
+                         limits = c(0, dmax[2]), 
+                         guide = guide_colorbar(barwidth = 15, "cm", ticks = F)) + 
     # define axis tick frequency
     scale_y_continuous(breaks = c(ymn+1,  ymx-2)) +
     scale_x_continuous(breaks = c(xmn+2,  xmx-2)) +
     theme_classic() +
     theme(legend.position="bottom", legend.title=element_blank(), legend.background = element_rect(fill = '#EFF0F8')) +
-    theme(axis.line.x = element_line(size = 1), axis.line.y = element_line(size = 1)) +
+    theme(axis.line.x = element_line(linewidth =  1), axis.line.y = element_line(linewidth = 1)) +
     theme(axis.text = element_text(size = 15), axis.title = element_text(size = 20)) +
-    #theme(axis.text.x = element_text(angle = 50, hjust = 1)) +
     theme(legend.text = element_text(size = 15)) +
     theme(strip.text = element_text(size = 15, colour = '#EFF0F8')) +
     theme(panel.spacing = unit(1, "lines")) +
-    theme(plot.background = element_rect(fill = '#EFF0F8', color = '#EFF0F8'),
+    theme(plot.background = element_rect(fill = '#EFF0F8', color = '#EFF0F8', linewidth = 0),
           panel.background = element_rect(fill = '#EFF0F8', color = '#EFF0F8')) +
     theme(strip.background = element_rect(fill = '#2C2D7C')) +
     xlab("\nLongitude") +
-    ylab("Latitude") +
-    theme(plot.title = element_text(size = 20)) +
-    ggsn::scalebar(data = conf_data, dist = 300, transform = TRUE, dist_unit = "km", model = "WGS84", height = 0.05, location = "bottomright",
-                   st.dist = 0.05, st.bottom = FALSE, st.size = 5, anchor = c(x = 29.0, y = 53.5),
-                   facet.var = "Month", facet.lev = "December")
+    ylab("Latitude\n") +
+    theme(plot.title = element_text(size = 20))
   
   # return maps
-  return(list(mean = mean_map, conf = conf_map))
+  return(list(mean = meanMap, sd = sdMap))
 }
 
 ########################### END OF CODE -------------------------------------------
