@@ -13,7 +13,7 @@
 # This simulation function forms the basis of the predictive tool. 
 # Briefly, it combines details outlining the location of initial ephyra release with information on projected abiotic conditions and localized water movements,
 # to predict spatial and temporal patterns in Medusae density.
-JellySim <- function(pars, driftData, n_days, xmx, xmn, ymx, ymn, m, zmax = 1000, R = 50,
+JellySim <- function(pars, driftData, n_days, xmx, xmn, ymx, ymn, m, zmax, R = 50,
                      # pars: Demographic parameters used to parameterise the periodic population models used to simulate jellyfish dynamics 
                      #        (the exact demographic patterns for which information is required will depend on the structure of the demographic functions described in PeriodicMat.R)
                      # driftData: the abiotic conditions to which drifting particles are exposed to depending on the timing and location of their release, 
@@ -25,7 +25,7 @@ JellySim <- function(pars, driftData, n_days, xmx, xmn, ymx, ymn, m, zmax = 1000
                      # ymn: min latitude covered by the simulation
                      #      Currently, these GPS details default to ensure the function focuses on predicting jellyfish blooms within the Baltic Sea.
                      # m: dimensions of demographic projection matrix (allows simulation function to match output dimensions with extents called by demographic functions)
-                     # zmax: How many sampling iterations are required to estimate a measure of stochasticity in predicted medusae densities (defaults to 1000).
+                     # zmax: How many sampling iterations are required to estimate a measure of stochasticity in predicted medusae densities.
                      # R: desired number of columns and rows used for the output raster(s) displaying projected densities (defaults to 50).
                      # -------------------------------------------------
                      # How the model uses these details then depends on two user defined parameters:
