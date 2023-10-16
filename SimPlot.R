@@ -21,7 +21,7 @@ SimPlot <- function(meanRast, sdRast, sites, xmx, xmn, ymx, ymn) {
             round_any(max(values(sdRast)), 0.01, f = ceiling))
   
   # read in world shape file
-  world <- ne_countries(scale = "medium", returnclass = "sf")
+  world <- ne_countries(scale = "medium", returnclass = "sf") 
   
   # For plotting, the raster layers will need coercing into stacked data-frames
   # Extract coordinates

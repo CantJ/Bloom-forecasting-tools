@@ -11,32 +11,31 @@
 #----------------------------------------------------
 
 # Load required packages
-library(spsUtil, quietly = TRUE)
-packages <- c('data.table',
-              'terra',
-              'sf', 
-              'purrr', 
-              'pbapply', 
-              'abind', 
-              'foreach', 
-              'future',
-              'doFuture', 
-              'purrr',
-              'gamlss',
-              'gamlss.dist',
-              "viridis",
-              "ggplot2",
-              "rnaturalearth",
-              "rnaturalearthdata",
-              "scales",
-              'plyr',
-              'ggsn',
-              'shiny',
-              'shinydashboard',
-              'shinyWidgets',
-              'shinythemes',
-              'plotly')
-quiet(lapply(packages, require, character.only = TRUE, quietly = TRUE))
+require(spsUtil, quietly = TRUE)
+require('data.table', quietly = TRUE)
+require('terra', quietly = TRUE)
+require('sf', quietly = TRUE)
+require('purrr', quietly = TRUE)
+require('pbapply', quietly = TRUE)
+require('abind', quietly = TRUE)
+require('foreach', quietly = TRUE)
+require('future', quietly = TRUE)
+require('doFuture', quietly = TRUE)
+require('purrr', quietly = TRUE)
+require('gamlss', quietly = TRUE)
+require('gamlss.dist', quietly = TRUE)
+require("viridis", quietly = TRUE)
+require("ggplot2", quietly = TRUE)
+require("rnaturalearth", quietly = TRUE)
+require("rnaturalearthdata", quietly = TRUE)
+require("scales", quietly = TRUE)
+require('plyr', quietly = TRUE)
+require('ggsn', quietly = TRUE)
+require('shiny', quietly = TRUE)
+require('shinydashboard', quietly = TRUE)
+require('shinyWidgets', quietly = TRUE)
+require('shinythemes', quietly = TRUE)
+require('plotly', quietly = TRUE)
 
 # load required data
 load("ParticleTracks2021.RData") # Hydrodynamic information
@@ -73,8 +72,8 @@ source("SimPlot.R") # plotting functions
 siteCoords <- st_as_sf(sites, coords = c("Lon", "Lat"), crs = 4326) # this crs code corresponds with a WGS84 projection
 # and for plotting purposes re add the latitude and longitude information to this data file
 siteCoords$Lat <- sites$Lat; siteCoords$Lon <- sites$Lon
-# read in world shape file (this will also be called by the sim_plot function below)
-world <- ne_countries(scale = "medium", returnclass = "sf")
+# read in world shape file
+world <- ne_countries(scale = "medium", returnclass = "sf") 
 
 # and plot the release sites.
 sitePlot <- suppressWarnings(ggplot() +
@@ -93,7 +92,7 @@ sitePlot <- suppressWarnings(ggplot() +
   xlab("Longitude") +
   ylab("Latitude") +
   ggsn::scalebar(data = world, transform = TRUE, dist = 200, dist_unit = "km", model = "WGS84",
-                 height = 0.002, location = "bottomright", st.dist = 0.002, st.bottom = FALSE, anchor = c(x = 32.5, y = 53.5)))
+                 height = 0.004, location = "bottomright", st.dist = 0.002, st.bottom = FALSE, anchor = c(x = 32.5, y = 53.5)))
 
 #----------------------------------------------------
 # STEP 4: DEFINE WEB APP SPECIALIST FUNCTIONS
@@ -171,12 +170,18 @@ ui <- fluidPage(
                     color: #2C2D7C;
                     font-family: "Arial";
                   }
+                  .modal-footer{
+                  background-color: #000000;
+                  }
+                  .modal-body{
+                  background-color: #000000;
+                  }
                   .footer {
                    position: auto;
                    bottom: 0;
                    width: 100%;
                    height: 200px;
-                   background-color: #232323; 
+                   background-color: #000000; 
                    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
                   }')),
               tags$script(" $(document).ready(function () {
@@ -199,7 +204,7 @@ ui <- fluidPage(
                   style = 'text-align: center;'),
                  br(),
                  br(),
-                column(2, a(img(src = "https://gojelly.eu/wp-content/uploads/2018/02/gojell-2y.png", style = "height: 250px; display: block; margin-left: auto; margin-right: auto;"), href = "https://gojelly.eu/", target = "_blank",
+                column(2, a(img(src = "GoJelly_logo.png", style = "height: 250px; display: block; margin-left: auto; margin-right: auto;"), href = "https://gojelly.eu/", target = "_blank",
                             br()))),
              fluidRow(img(src = 'Photo_banner.png', width = '1400px', style = "display: block; margin-left: auto; margin-right: auto; border-radius: 10px; box-shadow: 0 0 15px rgba(0, 0, 0, 0.3) "))
              ),
@@ -214,7 +219,7 @@ ui <- fluidPage(
                       column(4)),
              fluidRow(
                column(2),
-               column(8, h5(p("We cannot ignore the impact uncertainty has on our ability to predict ecological events, but it should never prevent us making predictions.
+               column(8, h5(p("We cannot ignore the impact uncertainty has on our ability to predict ecological events, but it should never prevent us from making predictions.
                               Making predictions, and then validating them, offers the opportunity to identify what it is about ecological systems we do not yet understand, and therefore provides insight into where further work is required.
                               Using predictive tools to first highlight and then resolve gaps in our knowledge is just as valuable as their use in anticipating ecological events."),
                             br(),
@@ -232,7 +237,7 @@ ui <- fluidPage(
                         fluidRow(
                           column(5, h3(strong("Common European jellyfish"), style = 'color: #2C2D7C; text-align: center'),
                         h5(p(HTML(paste0("Jellyfish is a collective term used to refer to over 1000 species of gelatinous (‘jelly-like’) marine organisms. 
-                            In Europe the most common jellyfish species encountered include the Moon jelly (", strong("A"), ", ", em("Aurelia aurita"), ") the Blue jellyfish (", strong("B"), ", ", em("Cyanea lamarckii"), "), the Upside-down jellyfish (", strong("C"), ", ", em("cassiopea andromeda"), "), the Lion’s mane (", strong("D"), ", ", em("Cyanea capillata"), ") and the Barrel jellyfish (", strong("E"), ", ", em("Rhizostoma pulmo"), "). 
+                            In Europe the most common jellyfish species encountered include the Moon jelly (", strong("A"), ", ", em("Aurelia aurita"), ") the Blue jellyfish (", strong("B"), ", ", em("Cyanea lamarckii"), "), the Upside-down jellyfish (", strong("C"), ", ", em("Cassiopea andromeda"), "), the Lion’s mane (", strong("D"), ", ", em("Cyanea capillata"), ") and the Barrel jellyfish (", strong("E"), ", ", em("Rhizostoma pulmo"), "). 
                             The prominence of these species is helped by their recognizable ", em("Scphozoan"), " (true jellyfish) form consisting of a bell-shaped ‘body’ and a series of slender tentacles."))),
                            style = 'text-align: center;'),
                         br(),
@@ -297,7 +302,7 @@ ui <- fluidPage(
                           )
                         ),
                tabPanel("GoJelly",
-                        fluidRow(column(4, br(), img(src = "https://gojelly.eu/wp-content/uploads/2018/12/170804_TMD3_013.jpg", style = 'width: 400px; display: block; margin-left: auto; margin-right: auto;'),
+                        fluidRow(column(4, br(), img(src = "Chrysaora_hysoscella.webp", style = 'width: 400px; display: block; margin-left: auto; margin-right: auto;'),
                                         br()),
                                  column(8, h3(strong("GoJelly: A gelatinous solution to plastic pollution"), style = 'color: #2C2D7C; text-align: center'),
                                         h5(p("GoJelly is a collaborative effort bringing together a range of expertise in technological development, business analysis, fishing practises, and both environmental and social research, from across Denmark, Germany, Norway, Portugal, Slovenia, Israel, Italy, France, and China."),
@@ -329,7 +334,7 @@ ui <- fluidPage(
                             br(),
                             h5(em("Ephyra release period:"), style = "color: #DC9257"),
                             fluidRow(
-                              column(8, # Define ephyra release period
+                              column(8, align="center", # Define ephyra release period
                                      sliderTextInput("rel_months", label = NULL,
                                                      choices = c("January", "February", "March", "April", "May", "June", "July",
                                                                  "August", "September", "October", "November", "December"),
@@ -338,15 +343,14 @@ ui <- fluidPage(
                             br(),
                             h5(em("Number of Iterations:"), style = "color: #DC9257"),
                             fluidRow(
-                              column(6, 
+                              column(12, align="center",
                                      # Define number of stochastic iterations 
                                      knobInput("zmax", label = NULL,
                                                min = 2, max = 1000, value = 10,
                                                step = 1,
                                                displayPrevious = TRUE,
                                                fgColor = "#DC9257", 
-                                               inputColor = "#DC9257"),
-                                     offset = 4)),
+                                               inputColor = "#DC9257"))),
                             fluidRow(
                               column(10,
                             h5(p(style = "text-align: center", strong("Note:"), "Increasing the number of iterations will extend the time needed for the forecast to run to completion."), style = "color: #DC9257"),
@@ -413,10 +417,10 @@ ui <- fluidPage(
     ),
     # Insert universal page footer across tabs
     footer = tags$footer(class = "footer",
-                         style = "background-color: #232323",
+                         style = "background-color: #000000",
                          p(
                            hr(),
-                           column(1, offset = 1, a(img(src = "https://gojelly.eu/wp-content/uploads/2018/02/gojelly-white.png", style = "height: 150px"), href = "https://gojelly.eu/", target = "_blank")),
+                           column(1, offset = 1, a(img(src = "Logo_dark.png", style = "height: 150px"), href = "https://gojelly.eu/", target = "_blank")),
                            column(3, offset = 1, p(h4(strong("GoJelly"))),
                                   p(h6("A gelatinous solution to plastic pollution: An innovative EU H2020 funded project seeking to use jellyfish as a solution to combat marine litter.")),
                                   p(h6(span(strong("Find out more:"), style = 'color: #ACAFD9'), a("https://gojelly.eu/", href = "https://gojelly.eu/", target = "_blank")))),
@@ -448,8 +452,9 @@ server <- function(input, output, session) { # inputs are the user define variab
     # Display loading message (particularly useful for longer simulations)
     showModal(modalDialog(h3("Jellyfish drifting..."),
                           h5(br(),
-                             "It may take upto fifteen minutes for a simulation to complete. Once this message disappears, please wait a few seconds for the page to update...", style = "color: #EFF0F8; text-align: center"),
-                          footer =img(src = "https://gojelly.eu/wp-content/uploads/2018/02/gojelly-white.png", style = "height: 150px"), 
+                             "Hang in there! It can take up to fifteen minutes for a simulation to complete.", style = "color: #EFF0F8; text-align: center"),
+                          p(h5("Once this message disappears, please wait a few seconds for the page to update...", style = "color: #EFF0F8; text-align: center")),
+                          footer = img(src = "Logo_dark.png", style = "height: 150px"), 
                           size = 'l',
                           easyClose = FALSE,
                           fade = TRUE))
@@ -490,10 +495,10 @@ server <- function(input, output, session) { # inputs are the user define variab
     # Primary Plot
     MeanPlot <- Jelly_plots$mean
     # Confidence Plot
-    ConfPlot <- Jelly_plots$sd
+    SDPlot <- Jelly_plots$sd
     
     # Condense together the plots 
-    plots <- list(MeanPlot = MeanPlot, ConfPlot = ConfPlot)
+    plots <- list(MeanPlot = MeanPlot, SDPlot = SDPlot)
     
     # Let the reactive function know what information it is focusing on
     return(plots)
@@ -511,10 +516,10 @@ server <- function(input, output, session) { # inputs are the user define variab
   }, height = 'auto', bg = '#EFF0F8', execOnResize = TRUE)
   
   # Confidence plots
-  output$conf.plot <- renderPlot({ 
+  output$sd.plot <- renderPlot({ 
     tryCatch( {
       plots <- sim_outputs()
-      plots$ConfPlot
+      plots$SDPlot
     } , shiny.silent.error = function(e) {
       validate("")
     } )
