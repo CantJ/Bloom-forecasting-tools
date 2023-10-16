@@ -10,26 +10,26 @@ For further details on the various function contained within this repository ple
 This work was carried out as part of the EU Horizon funded project GoJelly. Further information on this project can be found at **https://gojelly.eu/**.
 
 
+
 ## File Details:
----
 
 ***JellySim.R:***
-This script contains the primary forecasting function (and its internal dependent functions) of our bloom forecasting framework. In its current form, this function predicts temporal and spatial patterns in the aggregation of **Aurelia aurita** populations within the Baltic Sea. However, we have intentionally designed this tool to be flexible enough to work on differing focal populations and locations. Briefly, the **JellySim** function takes information outlining the location of interest and the hydrodynamic & abiotic conditions associated with that region of interest, and combines these details with a demographic model describing the dynamics of the focal population (see *PeriodicMat.R*), to forecast the location, timing, and size, of jellyfish aggregations. In essence, the tool can be provided alternative details regarding location, abiotic conditions, and demographic details, to modify it taxonomic and spatial focus.
+This script contains the primary forecasting function (and its internal dependent functions) of our bloom forecasting framework. In its current form, this function predicts temporal and spatial patterns in the aggregation of *Aurelia aurita* populations within the Baltic Sea. However, we have intentionally designed this tool to be flexible enough to work on differing focal populations and locations. Briefly, the **JellySim** function takes information outlining the location of interest and the hydrodynamic & abiotic conditions associated with that region of interest, and combines these details with a demographic model describing the dynamics of the focal population (see **PeriodicMat.R**), to forecast the location, timing, and size, of jellyfish aggregations. In essence, the tool can be provided alternative details regarding location, abiotic conditions, and demographic details, to modify it taxonomic and spatial focus.
 
 ***PeriodicMat.R:***
-This script contains all of the demographic functions needed to parameterise a hybrid matrix population model simultaneously describing the discrete and continuous dynamics of **A. aurita** populations within the Baltic Sea. In the context of our forecasting framework, this script serves as a demographic black box, and deals with all the population modelling elements of our predictive tool. This approach ensures that it is possible for users to redefine and parameterise their own demographic functions specific to their study organism, which can then be used to modify the scope of the forecasting functions in *JellySim.R*. ***Note***: if modifying *PeriodicMat* the details contained with *Demographic parameters.csv* needed to be modified accordingly.
+This script contains all of the demographic functions needed to parameterise a hybrid matrix population model simultaneously describing the discrete and continuous dynamics of *A. aurita* populations within the Baltic Sea. In the context of our forecasting framework, this script serves as a demographic black box, and deals with all the population modelling elements of our predictive tool. This approach ensures that it is possible for users to redefine and parameterise their own demographic functions specific to their study organism, which can then be used to modify the scope of the forecasting functions in **JellySim.R**. ***Note***: if modifying *PeriodicMat* the details contained with **Demographic parameters.csv** needed to be modified accordingly.
 
 ***SimPlot.R:***
-This script deals with plotting the outputs returned by *JellySim.R*. Provided the spatial details provided to *SimPlot.R* correspond with those provided to *JellySim.R* this plotting function can be adapted to any desired location.
+This script deals with plotting the outputs returned by **JellySim.R**. Provided the spatial details provided to **SimPlot.R** correspond with those provided to **JellySim.R** this plotting function can be adapted to any desired location.
 
 ***app.R:***
-This script contains the UI and server functions underpinning the interactive Risk Map application currently being hosted on shinyapps.io (**https://gojellyeu.shinyapps.io/gojellyapp/**). Ultimately, this script combines the simulating, modelling, and visualisation functions, contained with the *JellySim.R*, *PeriodicMat.R*, and *SimPlot.R* scripts into a more user-friendly format.
+This script contains the UI and server functions underpinning the interactive Risk Map application currently being hosted on shinyapps.io (*https://gojellyeu.shinyapps.io/gojellyapp/*). Ultimately, this script combines the simulating, modelling, and visualisation functions, contained with the **JellySim.R**, **PeriodicMat.R**, and **SimPlot.R** scripts into a more user-friendly format.
 
 ***ParticleTracks2021.RData:***
 This data file contains the hydrodynamic (drifting pathways) and abiotic conditions (Temperature & Salinity) experienced by drifting individuals within the Baltic Sea region, following there release at various locations and times throughout 2021.
 
 ***Release_site_GPS_info:***
-This csv file contains GPS coordinates corresponding with the release sites used in producing *ParticleTracks2021.R*. It is not required in the context of the forecasting tools, but is used by *app.R* to generate visuals.
+This csv file contains GPS coordinates corresponding with the release sites used in producing **ParticleTracks2021.R**. It is not required in the context of the forecasting tools, but is used by **app.R** to generate visuals.
 
 ***Demographic parameters.csv:***
-A csv file containing modelling coefficients used to parameterise the vital rate functions contained within the *PeriodicMat.R* script. These specific coefficients have been estimated using empirical data obtained from **A. aurita** populations within the Baltic region.
+A csv file containing modelling coefficients used to parameterise the vital rate functions contained within the **PeriodicMat.R** script. These specific coefficients have been estimated using empirical data obtained from *A. aurita* populations within the Baltic region.
