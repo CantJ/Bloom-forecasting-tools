@@ -8,9 +8,10 @@ Our motivation behind the development of this predictive framework was to introd
 For further details on the various function contained within this repository please check out the corresponding manuscript above, and also don't hesitate to get in touch with **James Cant at jic2@st-andrews.ac.uk** with any queries.
 
 This work was carried out as part of the EU Horizon funded project GoJelly. Further information on this project can be found at **https://gojelly.eu/**.
----
+
 
 ## File Details:
+---
 
 ***JellySim.R:***
 This script contains the primary forecasting function (and its internal dependent functions) of our bloom forecasting framework. In its current form, this function predicts temporal and spatial patterns in the aggregation of **Aurelia aurita** populations within the Baltic Sea. However, we have intentionally designed this tool to be flexible enough to work on differing focal populations and locations. Briefly, the **JellySim** function takes information outlining the location of interest and the hydrodynamic & abiotic conditions associated with that region of interest, and combines these details with a demographic model describing the dynamics of the focal population (see *PeriodicMat.R*), to forecast the location, timing, and size, of jellyfish aggregations. In essence, the tool can be provided alternative details regarding location, abiotic conditions, and demographic details, to modify it taxonomic and spatial focus.
@@ -32,4 +33,3 @@ This csv file contains GPS coordinates corresponding with the release sites used
 
 ***Demographic parameters.csv:***
 A csv file containing modelling coefficients used to parameterise the vital rate functions contained within the *PeriodicMat.R* script. These specific coefficients have been estimated using empirical data obtained from **A. aurita** populations within the Baltic region.
----
