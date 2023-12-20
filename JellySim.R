@@ -49,8 +49,8 @@ JellySim <- function(pars, driftData, n_days, xmx, xmn, ymx, ymn, m, zmax, R = 5
   # define parallel processing details if requested
   if(parallel == TRUE) {
     # load additional required packages
-    packages <- c('foreach', 'future', 'doFuture')
-    supressMessages(lapply(packages, require, character.only = TRUE, quietly = TRUE))
+    packages <- c('parallel', 'foreach', 'future', 'doFuture')
+    suppressMessages(lapply(packages, require, character.only = TRUE, quietly = TRUE))
     
     # Open multicore interface
     nCores = detectCores() *0.5 # request 50% of the available cores so as not to overload the system

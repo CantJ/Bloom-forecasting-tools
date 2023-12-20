@@ -11,7 +11,7 @@
 #----------------------------------------------------
 
 # Load required packages
-require(spsUtil, quietly = TRUE)
+require('spsUtil', quietly = TRUE)
 require('data.table', quietly = TRUE)
 require('terra', quietly = TRUE)
 require('sf', quietly = TRUE)

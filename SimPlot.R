@@ -60,7 +60,7 @@ SimPlot <- function(meanRast, sdRast, sites, xmx, xmn, ymx, ymn) {
     scale_y_continuous(breaks = c(ymn+1,  ymx-2)) +
     scale_x_continuous(breaks = c(xmn+2,  xmx-2)) +
     theme_classic() +
-    theme(legend.position="bottom", legend.title=element_blank(), legend.background = element_rect(fill = '#EFF0F8')) +
+    theme(legend.position="top", legend.title=element_blank(), legend.background = element_rect(fill = '#EFF0F8')) +
     theme(axis.line.x = element_line(linewidth = 1), axis.line.y = element_line(linewidth = 1)) +
     theme(axis.text = element_text(size = 15), axis.title = element_text(size = 20)) +
     theme(legend.text = element_text(size = 15)) +
@@ -89,7 +89,7 @@ SimPlot <- function(meanRast, sdRast, sites, xmx, xmn, ymx, ymn) {
     scale_y_continuous(breaks = c(ymn+1,  ymx-2)) +
     scale_x_continuous(breaks = c(xmn+2,  xmx-2)) +
     theme_classic() +
-    theme(legend.position="bottom", legend.title=element_blank(), legend.background = element_rect(fill = '#EFF0F8')) +
+    theme(legend.position="top", legend.title=element_blank(), legend.background = element_rect(fill = '#EFF0F8')) +
     theme(axis.line.x = element_line(linewidth =  1), axis.line.y = element_line(linewidth = 1)) +
     theme(axis.text = element_text(size = 15), axis.title = element_text(size = 20)) +
     theme(legend.text = element_text(size = 15)) +
