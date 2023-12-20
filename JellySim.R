@@ -15,7 +15,7 @@
 # to predict spatial and temporal patterns in Medusae density.
 JellySim <- function(pars, driftData, n_days, xmx, xmn, ymx, ymn, m, zmax, R = 50,
                      # pars: Demographic parameters used to parameterise the periodic population models used to simulate jellyfish dynamics 
-                     #        (the exact demographic patterns for which information is required will depend on the structure of the demographic functions described in PeriodicMat.R)
+                     #        (the exact demographic patterns for which information is required will depend on the structure of the demographic functions described in DMat.R)
                      # driftData: the abiotic conditions to which drifting particles are exposed to depending on the timing and location of their release, 
                      #             and the GPS coordinates corresponding with these conditions.
                      # n_days: the number of days comprising a month within provided drifting simulations.
@@ -192,7 +192,7 @@ site_sim <- function(loc, pars, EData, rel_location, rel_months, m, zmax, tmax, 
         Nt_ephyra <- matrix(NA, nrow = n_month, ncol = n_month)
       
         # generate initial polyp density and define demographic transition probability matrices
-        pop_sim <- PeriodicMat(m = m, n_month = n_month, pars = pars, Temp = Temp_use[1,], Sal = Sal_use[1,],
+        pop_sim <- DMat(m = m, n_month = n_month, pars = pars, Temp = Temp_use[1,], Sal = Sal_use[1,],
                                rel_months = rel_months, ephyra_omit = ephyra_omit)
       
         # store population indexing parameter
@@ -225,7 +225,7 @@ site_sim <- function(loc, pars, EData, rel_location, rel_months, m, zmax, tmax, 
       
         for(ii in 2:n_month) {
           # redefine define transition functions
-          pop_sim <- PeriodicMat(m = m, n_month = n_month, pars = pars, Temp = Temp_use[ii,], Sal = Sal_use[ii,], rel_months = rel_months, ephyra_omit = ephyra_omit)
+          pop_sim <- DMat(m = m, n_month = n_month, pars = pars, Temp = Temp_use[ii,], Sal = Sal_use[ii,], rel_months = rel_months, ephyra_omit = ephyra_omit)
           # extract initial population indexing parameter
           index <- pop_sim$Adjust
           # insert starting seed population polyp density into initial population vector
@@ -326,7 +326,7 @@ site_sim <- function(loc, pars, EData, rel_location, rel_months, m, zmax, tmax, 
         Nt_ephyra <- matrix(NA, nrow = n_month, ncol = n_month)
         
         # generate initial polyp density and define demographic transition probability matrices
-        pop_sim <- PeriodicMat(m = m, n_month = n_month, pars = pars, Temp = Temp_use[1,], Sal = Sal_use[1,],
+        pop_sim <- DMat(m = m, n_month = n_month, pars = pars, Temp = Temp_use[1,], Sal = Sal_use[1,],
                                rel_months = rel_months, ephyra_omit = ephyra_omit)
         
         # store population indexing parameter
@@ -359,7 +359,7 @@ site_sim <- function(loc, pars, EData, rel_location, rel_months, m, zmax, tmax, 
         
         for(ii in 2:n_month) {
           # redefine define transition functions
-          pop_sim <- PeriodicMat(m = m, n_month = n_month, pars = pars, Temp = Temp_use[ii,], Sal = Sal_use[ii,], rel_months = rel_months, ephyra_omit = ephyra_omit)
+          pop_sim <- DMat(m = m, n_month = n_month, pars = pars, Temp = Temp_use[ii,], Sal = Sal_use[ii,], rel_months = rel_months, ephyra_omit = ephyra_omit)
           # extract initial population indexing parameter
           index <- pop_sim$Adjust
           # insert starting seed population polyp density into initial population vector

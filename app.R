@@ -1,5 +1,5 @@
 # This script underpins the GoJelly interactive Jellyfish bloom and aggregation forecasting tool.
-# Firstly the script defines all nessecary modelling functions (also contained separately within the JellySim.R, PeriodicMat.R and SimPlot.R script files)
+# Firstly the script defines all nessecary modelling functions (also contained separately within the JellySim.R, DMat.R and SimPlot.R script files)
 # then the script outlines the ui and server functions needed for compiling the web app.
 
 # Primary Author: James Cant
@@ -60,7 +60,7 @@ pl = FALSE # parallel processing not possible on shiny server
 # STEP 2: LOAD SIMULATION MODEL FUNCTION DEPENDANCIES
 #----------------------------------------------------
 
-source("PeriodicMat.R") # demographic functions
+source("DMat.R") # demographic functions
 source("JellySim.R") # forecasting tools
 source("SimPlot.R") # plotting functions
 

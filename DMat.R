@@ -1,4 +1,4 @@
-# This script outlines the PeriodicMat function used within the GoJelly predictive tool for forecasting the spatial dynamics of jellyfish blooms.
+# This script outlines the DMat function used within the GoJelly predictive tool for forecasting the spatial dynamics of jellyfish blooms.
 # The primary purpose of this function is to generate periodic population matrix models using a series of pre-estimated demographic variables and environmental covariates.
 
 # Primary Author: James Cant
@@ -9,14 +9,14 @@
 # STEP 1: DEFINE PRIMARY FUNCTION
 #----------------------------------------------------
 
-# PeriodicMat serves as a demographic black box. It is provided with a series of abiotic readings and demographic parameters describing the various survival, growth and reproductive patterns
+# DMat serves as a demographic black box. It is provided with a series of abiotic readings and demographic parameters describing the various survival, growth and reproductive patterns
 # underlying the dynamics of the population of interest, and how these patterns are influenced by abiotic conditions. This is a flexible component of the GoJelly predictive tool and can be modified 
 # depending on the unique dynamics of the focal population. Crucially, all that needs to be maintained is that function must return a list comprising a sequence of survival and growth matrices (matU),
 # clonality matrices (matC), reproductive matrices (matF), combined population matrices (matB, equal to matU+matC+matF), a measure of initial population size, 
 # the widths of any size bins used (continuous matrix models), and an indexing factor needed to align monthly demographic rates and abiotic covariates.
 
 # Function for generating combined discrete-continuous periodic population matrix
-PeriodicMat <- function(m, n_month, pars, Temp, Sal, rel_months, ephyra_omit) {
+DMat <- function(m, n_month, pars, Temp, Sal, rel_months, ephyra_omit) {
    
   # Load package dependencies
   packages <- c("purrr", "gamlss", "gamlss.dist")
@@ -175,7 +175,7 @@ PeriodicMat <- function(m, n_month, pars, Temp, Sal, rel_months, ephyra_omit) {
 # STEP 2: DEFINE INTERNAL FUNCTIONS 
 #----------------------------------------------------
 
-# These functions are called internally within the PeriodicMat function above and correspond with each of the vital rate patterns that require paramterisation in order to 
+# These functions are called internally within the DMat function above and correspond with each of the vital rate patterns that require paramterisation in order to 
 # generate the required matrix population model. These functions can be modified and/or removed depending on the life-cycle of the focal population.
 
 # 1. Define the functions for creating matrix models
@@ -429,7 +429,7 @@ Fz1z <- function (Sizet1, pars, Ripe_size, Temp, Sal, survM) { # this function w
     }}
 }
 
-# 5. Matrix construction functions called within PeriodicMat function -----------------------------------------------------------
+# 5. Matrix construction functions called within DMat function -----------------------------------------------------------
 # Function for building Panel 1 (Discrete matrix element).
 mk_mat1 <- function(ii, mat = mat, dims = dims, index, Plan_stasis, Plan_Polyp, Polyp_Polyp, Ephyra_Ephyra, Polyp_bud, Polyp_Ephyra){
   if(ii >= index){
