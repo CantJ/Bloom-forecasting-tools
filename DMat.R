@@ -20,7 +20,11 @@ DMat <- function(m, n_month, pars, Temp, Sal, rel_months, ephyra_omit) {
    
   # Load package dependencies
   packages <- c("purrr", "gamlss", "gamlss.dist")
-  suppressMessages(lapply(packages, require, character.only = TRUE, quietly = TRUE))
+  installed_packages <- packages %in% rownames(installed.packages())
+  if (any(installed_packages == FALSE)) {
+    invisible(install.packages(packages[!installed_packages]))
+  }
+  invisible(lapply(packages, library, character.only = TRUE))
   
   ### This function needs vectors describing the temperatures & salinities experienced: 1. by polyps at point of ephyra release, and 2. the subsequent drifting medusae.
   # Define a value to keep indexing consisted across simulation runs for when the number of periods being simulated is less than the total temporal expanse of the simulation

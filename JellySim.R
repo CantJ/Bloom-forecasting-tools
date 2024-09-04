@@ -43,14 +43,23 @@ JellySim <- function(pars, driftData, n_days, xmx, xmn, ymx, ymn, m, zmax, R = 5
   # expected to arise following their release from a specified location at a specified time of year.
   
   # Load package dependencies
-  packages <- c('data.table','terra','sf', 'purrr', 'pbapply', 'abind')
-  suppressMessages(lapply(packages, require, character.only = TRUE, quietly = TRUE))
+  packages <- c('data.table','terra','sf', 'purrr', 'pbapply', 'gamlss.dist', 'abind')
+  installed_packages <- packages %in% rownames(installed.packages())
+  if (any(installed_packages == FALSE)) {
+    invisible(install.packages(packages[!installed_packages]))
+  }
+  # Packages loading
+  invisible(lapply(packages, library, character.only = TRUE))
   
   # define parallel processing details if requested
   if(parallel == TRUE) {
     # load additional required packages
     packages <- c('parallel', 'foreach', 'future', 'doFuture')
-    suppressMessages(lapply(packages, require, character.only = TRUE, quietly = TRUE))
+    installed_packages <- packages %in% rownames(installed.packages())
+    if (any(installed_packages == FALSE)) {
+      install.packages(packages[!installed_packages])
+    }
+    invisible(lapply(packages, library, character.only = TRUE))
     
     # Open multicore interface
     nCores = detectCores() *0.5 # request 50% of the available cores so as not to overload the system

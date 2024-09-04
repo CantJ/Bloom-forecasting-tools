@@ -14,8 +14,12 @@ SimPlot <- function(meanRast, sdRast, sites, xmx, xmn, ymx, ymn) {
   # Load package dependencies
   packages <- c("terra", "sf", "viridis", "ggplot2", "rnaturalearth",
                 "rnaturalearthdata", "scales", 'plyr')
-  lapply(packages, require, character.only = TRUE)
-  
+  installed_packages <- packages %in% rownames(installed.packages())
+  if (any(installed_packages == FALSE)) {
+    invisible(install.packages(packages[!installed_packages]))
+  }
+  invisible(lapply(packages, library, character.only = TRUE))
+
   # Estimate maximum recorded densities
   dmax <- c(round_any(max(values(meanRast)), 0.01, f = ceiling),
             round_any(max(values(sdRast)), 0.01, f = ceiling))
@@ -42,12 +46,16 @@ SimPlot <- function(meanRast, sdRast, sites, xmx, xmn, ymx, ymn) {
   
   # define color scale
   pal <- c("white", viridis(1000, direction = -1, option = "magma"))
+  # Define facet labels
+  monthNames <- as_labeller(c("Month 1" = month.abb[1], "Month 2" = month.abb[2], "Month 3" = month.abb[3], "Month 4" = month.abb[4],
+                            "Month 5" = month.abb[5], "Month 6" = month.abb[6], "Month 7" = month.abb[7], "Month 8" = month.abb[8], 
+                            "Month 9" = month.abb[9], "Month 10"= month.abb[10], "Month 11" = month.abb[11], "Month 12" = month.abb[12], "Month 13" = month.abb[1]))
   
   # Build plots
   # Mean density forecasts
   meanMap <- ggplot() +
     geom_tile(aes(x = Lon, y = Lat, fill = Density), data = meanDat) +
-    facet_wrap(~Month) +
+    facet_wrap(~Month, labeller = monthNames) +
     geom_sf(data = world, fill = "gray79", colour = "gray47") + 
     geom_sf(data = sites, fill = "black", size = 3.5, shape = 21) + # add location of selected release sites to the plot
     coord_sf(xlim = c(xmn, xmx), ylim = c(ymn, ymx), expand = FALSE) +
