@@ -87,6 +87,6 @@ JellyPlots <- SimPlot(# main forecasts
 JellyPlots$mean
 
 # Forecast confidence
-JellyPlots$sd
+JellyPlots$conf
 
 # ------------------------------------------------ End of Code ----------------------------------

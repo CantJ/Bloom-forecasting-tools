@@ -84,7 +84,7 @@ SimPlot <- function(meanRast, confRast, sites, xmx, xmn, ymx, ymn) {
   # Forecast confidence
   confMap <- ggplot() +
     geom_tile(aes(x = Lon, y = Lat, fill = Density), data = confDat) +
-    facet_wrap(~Month) +
+    facet_wrap(~Month, labeller = monthNames) +
     geom_sf(data = world, fill = "gray79", colour = "gray47") + 
     geom_sf(data = sites, fill = "black", size = 3.5, shape = 21) +
     coord_sf(xlim = c(xmn, xmx), ylim = c(ymn, ymx), expand = FALSE) +
@@ -111,7 +111,7 @@ SimPlot <- function(meanRast, confRast, sites, xmx, xmn, ymx, ymn) {
     theme(plot.title = element_text(size = 20))
   
   # return maps
-  return(list(mean = meanMap, confidence = confMap))
+  return(list(mean = meanMap, conf = confMap))
 }
 
 ########################### END OF CODE -------------------------------------------
