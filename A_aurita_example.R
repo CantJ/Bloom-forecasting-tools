@@ -77,7 +77,7 @@ JellyData <- JellySim(# demographic details
 JellyPlots <- SimPlot(# main forecasts
                        meanRast = JellyData$mean, 
                        # plots showing forecast confidence
-                       sdRast = JellyData$sd,
+                       confRast = JellyData$conf,
                        # Highlight initial release sites
                        sites = JellyData$site,
                        # Spatial extent of plots

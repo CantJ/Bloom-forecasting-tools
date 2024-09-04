@@ -9,7 +9,7 @@
 #----------------------------------------------------
 
 # Plotting function that will produce visual outputs using details returned by the JellySim function. 
-SimPlot <- function(meanRast, sdRast, sites, xmx, xmn, ymx, ymn) {
+SimPlot <- function(meanRast, confRast, sites, xmx, xmn, ymx, ymn) {
   
   # Load package dependencies
   packages <- c("terra", "sf", "viridis", "ggplot2", "rnaturalearth",
@@ -22,7 +22,7 @@ SimPlot <- function(meanRast, sdRast, sites, xmx, xmn, ymx, ymn) {
 
   # Estimate maximum recorded densities
   dmax <- c(round_any(max(values(meanRast)), 0.01, f = ceiling),
-            round_any(max(values(sdRast)), 0.01, f = ceiling))
+            round_any(max(values(confRast)), 0.01, f = ceiling))
   
   # read in world shape file
   world <- ne_countries(scale = "medium", returnclass = "sf") 
@@ -32,14 +32,14 @@ SimPlot <- function(meanRast, sdRast, sites, xmx, xmn, ymx, ymn) {
   plotCoords <- xyFromCell(meanRast, seq_len(ncell(meanRast)))
   # Extract density estimates
   meanValues <- stack(as.data.frame(values(meanRast)))
-  sdValues <- stack(as.data.frame(values(sdRast)))
+  confValues <- stack(as.data.frame(values(confRast)))
   # reassign variable names
-  names(meanValues) <- names(sdValues) <- c('Density', 'Month')
-  levels(meanValues$Month) <- levels(sdValues$Month) <- paste0('Month ', 1:nlyr(meanRast))
+  names(meanValues) <- names(confValues) <- c('Density', 'Month')
+  levels(meanValues$Month) <- levels(confValues$Month) <- paste0('Month ', 1:nlyr(meanRast))
   colnames(plotCoords) <- c('Lon', 'Lat')
   # And combine coordinates and values back together
   meanDat <- cbind(plotCoords, meanValues)
-  sdDat <- cbind(plotCoords, sdValues)
+  confDat <- cbind(plotCoords, confValues)
   
   # format release site gps coordinates for plotting
   sites <- st_as_sf(sites, coords = c("Lon", "Lat"), crs = 4326) # this crs code corresponds with a WGS84 projection
@@ -82,15 +82,15 @@ SimPlot <- function(meanRast, sdRast, sites, xmx, xmn, ymx, ymn) {
     theme(plot.title = element_text(size = 20))
   
   # Forecast confidence
-  sdMap <- ggplot() +
-    geom_tile(aes(x = Lon, y = Lat, fill = Density), data = sdDat) +
+  confMap <- ggplot() +
+    geom_tile(aes(x = Lon, y = Lat, fill = Density), data = confDat) +
     facet_wrap(~Month) +
     geom_sf(data = world, fill = "gray79", colour = "gray47") + 
     geom_sf(data = sites, fill = "black", size = 3.5, shape = 21) +
     coord_sf(xlim = c(xmn, xmx), ylim = c(ymn, ymx), expand = FALSE) +
     scale_fill_gradientn(colours = pal,
                          breaks = c(0, dmax[2]),
-                         labels = c(0, format(dmax[2], scientific = FALSE)),
+                         labels = c('Low', 'High'),
                          limits = c(0, dmax[2]), 
                          guide = guide_colorbar(barwidth = 15, "cm", ticks = F)) + 
     # define axis tick frequency
@@ -111,7 +111,7 @@ SimPlot <- function(meanRast, sdRast, sites, xmx, xmn, ymx, ymn) {
     theme(plot.title = element_text(size = 20))
   
   # return maps
-  return(list(mean = meanMap, sd = sdMap))
+  return(list(mean = meanMap, confidence = confMap))
 }
 
 ########################### END OF CODE -------------------------------------------

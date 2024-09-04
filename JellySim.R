@@ -86,7 +86,7 @@ JellySim <- function(pars, driftData, n_days, xmx, xmn, ymx, ymn, m, zmax, R = 5
   
   # Store output densities and GPS coordinates
   meanDens <- lapply(site_sim_outputs, '[[', 1)
-  sdDens <- lapply(site_sim_outputs, '[[', 2)
+  confDens <- lapply(site_sim_outputs, '[[', 2)
   Lats <- lapply(site_sim_outputs, '[[', 3)
   Lons <- lapply(site_sim_outputs, '[[', 4)
   # Assign output names
@@ -94,7 +94,7 @@ JellySim <- function(pars, driftData, n_days, xmx, xmn, ymx, ymn, m, zmax, R = 5
     site = rel_location[x]
     paste0("Location ", site) } )
   names(meanDens) <- location.name 
-  names(sdDens) <- location.name 
+  names(confDens) <- location.name 
   names(Lats) <- location.name 
   names(Lons) <- location.name
   
@@ -105,34 +105,34 @@ JellySim <- function(pars, driftData, n_days, xmx, xmn, ymx, ymn, m, zmax, R = 5
   # condense together days from corresponding months (across all requested sites)
   # This produces arrays comprising monthly matrices documenting temporal and spatial patterns in projected densities following release on any given day.
   meanDens <- lapply(1:length(rel_location), array_reformat, arr = meanDens)
-  sdDens <- lapply(1:length(rel_location), array_reformat, arr = sdDens)
+  confDens <- lapply(1:length(rel_location), array_reformat, arr = confDens)
   Lats <- lapply(1:length(rel_location), array_reformat, arr = Lats)
   Lons <- lapply(1:length(rel_location), array_reformat, arr = Lons)
   
   # Combine together information from across release locations
   meanDens <- do.call(abind, c(lapply(meanDens, '['), along = 1))
-  sdDens <- do.call(abind, c(lapply(sdDens, '['), along = 1))
+  confDens <- do.call(abind, c(lapply(confDens, '['), along = 1))
   Lats <- do.call(abind, c(lapply(Lats, '['), along = 1))
   Lons <- do.call(abind, c(lapply(Lons, '['), along = 1))
   # Ensure that each matrix only contains entries for times for which there is corresponding GPS and abiotic information.
   meanDens[is.na(Lats)] <- NA
-  sdDens[is.na(Lats)] <- NA
+  confDens[is.na(Lats)] <- NA
   Lats[is.na(meanDens)] <- NA
   Lons[is.na(meanDens)] <- NA
   
   # Strip out each column (across the whole array) to produce temporal rasters displaying how medusae density changes over time (and how within a month the simulations can vary.
-      # loop through each matrix quadruplet (Den_mean, dens_sd, Lat, Long)
+      # loop through each matrix quadruplet (Den_mean, dens_conf, Lat, Long)
       # each time extracting successive columns and generating a density raster before storing it (although lapply does this all simultaneously)
   meanRast <- rast(lapply(1:dim(meanDens)[2], DensityRaster, lon = Lons, lat = Lats, Dens = meanDens, R = R, xmn = xmn, xmx = xmx, ymn = ymn, ymx = ymx))
-  sdRast <- rast(lapply(1:dim(sdDens)[2], DensityRaster, lon = Lons, lat = Lats, Dens = sdDens, R = R, xmn = xmn, xmx = xmx, ymn = ymn, ymx = ymx))
+  confRast <- rast(lapply(1:dim(confDens)[2], DensityRaster, lon = Lons, lat = Lats, Dens = confDens, R = R, xmn = xmn, xmx = xmx, ymn = ymn, ymx = ymx))
       
   # Name raster layers
   layer.name <- sapply(1:nlyr(meanRast), function(x){ paste0("Month ", x) } )
   names(meanRast) <- layer.name
-  names(sdRast) <- layer.name
+  names(confRast) <- layer.name
     
   # and return desired outputs
-  return(list(mean = meanRast, sd = sdRast, site = site_coords))
+  return(list(mean = meanRast, conf = confRast, site = site_coords))
 }
 
 
@@ -274,24 +274,24 @@ site_sim <- function(loc, pars, EData, rel_location, rel_months, m, zmax, tmax, 
         # return simulated densities
         return(Nt_med)})
     
-      # Calculate mean and variance across stochastic density estimates
+      # Calculate mean and variance (confidence) across stochastic density estimates
       meanMat <- DensCalcs(DensSim, 'mean')
-      sdMat <- DensCalcs(DensSim, 'sd')
+      confMat <- DensCalcs(DensSim, 'sd')
       
       # Return desired outputs from parallel processing
-      outList <- list(meanMat, sdMat, Lat, Lon)
+      outList <- list(meanMat, confMat, Lat, Lon)
       outList
     }
   
     # Combine daily iterations into arrays for each selected release location
     meanDen <- array(unlist(sapply(output,"[",1)), dim = c(dim(output[[1]][[1]]), n_days))
-    sdDen <- array(unlist(sapply(output,"[",2)), dim = c(dim(output[[1]][[2]]), n_days))
+    confDen <- array(unlist(sapply(output,"[",2)), dim = c(dim(output[[1]][[2]]), n_days))
     Lat <- array(unlist(sapply(output,"[",3)), dim = c(dim(output[[1]][[3]]), n_days))
     Lon <- array(unlist(sapply(output,"[",4)), dim = c(dim(output[[1]][[4]]), n_days))
     
   } else {
     # Define storage
-    meanList <- sdList <- latList <- lonList <- list()
+    meanList <- confList <- latList <- lonList <- list()
     
     # the simulation will always start in January so needs to repeat for each day of the month.
     for(n in 1:n_days){
@@ -408,26 +408,26 @@ site_sim <- function(loc, pars, EData, rel_location, rel_months, m, zmax, tmax, 
         # return simulated densities
         return(Nt_med)})
       
-      # Calculate mean and variance across stochastic density estimates
+      # Calculate mean and variance (confidence) across stochastic density estimates
       meanList[[n]] <- DensCalcs(DensSim, 'mean')
-      sdList[[n]] <- DensCalcs(DensSim, 'sd')
+      confList[[n]] <- DensCalcs(DensSim, 'sd')
     }
     
     # Combine daily iterations into arrays for each selected release location
     meanDen <- array(unlist(meanList), dim = c(dim(meanList[[1]]),n_days))
-    sdDen <- array(unlist(sdList), dim = c(dim(sdList[[1]]),n_days))
+    confDen <- array(unlist(confList), dim = c(dim(confList[[1]]),n_days))
     Lat <- array(unlist(latList), dim = c(dim(latList[[1]]),n_days))
     Lon <- array(unlist(lonList), dim = c(dim(lonList[[1]]),n_days))
   }
   
   # Clean arrays
   meanDen[is.nan(meanDen)] <- NA
-  sdDen[is.nan(sdDen)] <- NA
+  confDen[is.nan(confDen)] <- NA
   Lat[is.nan(Lon)] <- NA
   Lon[is.nan(Lat)] <- NA
   
   # Return outputs
-  return(list(mean = meanDen, sd = sdDen, Lat = Lat, Lon = Lon))
+  return(list(mean = meanDen, conf = confDen, Lat = Lat, Lon = Lon))
 }
 
 
