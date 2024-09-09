@@ -16,10 +16,11 @@ filePath <- 'file_directory_path/'
 source(paste0(filePath, 'JellySim.R'))
 source(paste0(filePath, 'DMat.R'))
 source(paste0(filePath, 'SimPlot.R'))
+source(paste0(filePath, 'ParSens.R'))
 
 # Load demographic parameters
 demogpars <- read.csv(paste0(filePath, 'Demographic parameters.csv'), row.names = 1)
-demogpars <- with(demogpars, setNames(x, rownames(demogpars))) # ensure appropriate rownaming
+demogpars <- with(demogpars, setNames(x, rownames(demogpars))) # ensure appropriate row naming
 
 # Load drifting details
 load(paste0(filePath, 'ParticleTracks2021.RData'))
@@ -88,5 +89,19 @@ JellyPlots$mean
 
 # Forecast confidence
 JellyPlots$conf
+
+
+##############################################
+# STEP 5: Quantify parameter sensitivities
+##############################################
+
+# Resupply the same details to the ParSens arguments as provided to JellySim above, 
+# less a value for zmax and selecting only one of the four release locations
+JellySens <- ParSens(pars = demogpars, m = m, driftData = SINMOD_data, n_days = nd,
+                     xmx = xx, xmn = xn, ymx = yx, ymn = yn, rel_location = sites, rel_months = months, parallel = pl,
+                     params = c('P.dens.temp', 'M.surv.temp', 'Growth.slope', 'E.surv.temp', 'No.ephyra.temp'))
+                            # Polyp Density, Medusae survival, Medusae growth, Ephyra survival, Number of Ephyra produced.
+# Sensitivities
+JellySens$plot
 
 # ------------------------------------------------ End of Code ----------------------------------

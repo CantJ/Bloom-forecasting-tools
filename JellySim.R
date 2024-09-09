@@ -43,10 +43,10 @@ JellySim <- function(pars, driftData, n_days, xmx, xmn, ymx, ymn, m, zmax, R = 5
   # expected to arise following their release from a specified location at a specified time of year.
   
   # Load package dependencies
-  packages <- c('data.table','terra','sf', 'purrr', 'pbapply', 'gamlss.dist', 'abind')
+  packages <- c('data.table','terra','sf', 'purrr', 'pbapply', 'gamlss.dist', 'abind', 'spsUtil')
   installed_packages <- packages %in% rownames(installed.packages())
   if (any(installed_packages == FALSE)) {
-    invisible(install.packages(packages[!installed_packages]))
+    install.packages(packages[!installed_packages], verbose = FALSE)
   }
   # Packages loading
   invisible(lapply(packages, library, character.only = TRUE))
@@ -57,7 +57,7 @@ JellySim <- function(pars, driftData, n_days, xmx, xmn, ymx, ymn, m, zmax, R = 5
     packages <- c('parallel', 'foreach', 'future', 'doFuture')
     installed_packages <- packages %in% rownames(installed.packages())
     if (any(installed_packages == FALSE)) {
-      install.packages(packages[!installed_packages])
+      install.packages(packages[!installed_packages], verbose = FALSE)
     }
     invisible(lapply(packages, library, character.only = TRUE))
     
@@ -201,8 +201,8 @@ site_sim <- function(loc, pars, EData, rel_location, rel_months, m, zmax, tmax, 
         Nt_ephyra <- matrix(NA, nrow = n_month, ncol = n_month)
       
         # generate initial polyp density and define demographic transition probability matrices
-        pop_sim <- DMat(m = m, n_month = n_month, pars = pars, Temp = Temp_use[1,], Sal = Sal_use[1,],
-                               rel_months = rel_months, ephyra_omit = ephyra_omit)
+        pop_sim <- quiet(DMat(m = m, n_month = n_month, pars = pars, Temp = Temp_use[1,], Sal = Sal_use[1,],
+                               rel_months = rel_months, ephyra_omit = ephyra_omit))
       
         # store population indexing parameter
         index <- pop_sim$Adjust
@@ -234,7 +234,7 @@ site_sim <- function(loc, pars, EData, rel_location, rel_months, m, zmax, tmax, 
       
         for(ii in 2:n_month) {
           # redefine define transition functions
-          pop_sim <- DMat(m = m, n_month = n_month, pars = pars, Temp = Temp_use[ii,], Sal = Sal_use[ii,], rel_months = rel_months, ephyra_omit = ephyra_omit)
+          pop_sim <- quiet(DMat(m = m, n_month = n_month, pars = pars, Temp = Temp_use[ii,], Sal = Sal_use[ii,], rel_months = rel_months, ephyra_omit = ephyra_omit))
           # extract initial population indexing parameter
           index <- pop_sim$Adjust
           # insert starting seed population polyp density into initial population vector
@@ -335,8 +335,8 @@ site_sim <- function(loc, pars, EData, rel_location, rel_months, m, zmax, tmax, 
         Nt_ephyra <- matrix(NA, nrow = n_month, ncol = n_month)
         
         # generate initial polyp density and define demographic transition probability matrices
-        pop_sim <- DMat(m = m, n_month = n_month, pars = pars, Temp = Temp_use[1,], Sal = Sal_use[1,],
-                               rel_months = rel_months, ephyra_omit = ephyra_omit)
+        pop_sim <- quiet(DMat(m = m, n_month = n_month, pars = pars, Temp = Temp_use[1,], Sal = Sal_use[1,],
+                               rel_months = rel_months, ephyra_omit = ephyra_omit))
         
         # store population indexing parameter
         index <- pop_sim$Adjust
@@ -368,7 +368,7 @@ site_sim <- function(loc, pars, EData, rel_location, rel_months, m, zmax, tmax, 
         
         for(ii in 2:n_month) {
           # redefine define transition functions
-          pop_sim <- DMat(m = m, n_month = n_month, pars = pars, Temp = Temp_use[ii,], Sal = Sal_use[ii,], rel_months = rel_months, ephyra_omit = ephyra_omit)
+          pop_sim <- quiet(DMat(m = m, n_month = n_month, pars = pars, Temp = Temp_use[ii,], Sal = Sal_use[ii,], rel_months = rel_months, ephyra_omit = ephyra_omit))
           # extract initial population indexing parameter
           index <- pop_sim$Adjust
           # insert starting seed population polyp density into initial population vector

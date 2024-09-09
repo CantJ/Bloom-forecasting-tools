@@ -16,7 +16,7 @@ SimPlot <- function(meanRast, confRast, sites, xmx, xmn, ymx, ymn) {
                 "rnaturalearthdata", "scales", 'plyr')
   installed_packages <- packages %in% rownames(installed.packages())
   if (any(installed_packages == FALSE)) {
-    invisible(install.packages(packages[!installed_packages]))
+    install.packages(packages[!installed_packages], verbose = FALSE)
   }
   invisible(lapply(packages, library, character.only = TRUE))
 
