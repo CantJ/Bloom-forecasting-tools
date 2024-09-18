@@ -296,7 +296,7 @@ ui <- fluidPage(
                              style  = 'text-align: center')),
                           column(7, br(), br(), br(), img(src = 'Work_flow.png', width = '700px', style = "display: block; margin-left: auto; margin-right: auto;"),
                                  br(),
-                                 h5(p(em(strong("Figure 3."), "Combining seasonal demographic models describing ", strong("(a)"), " the state-specific vital rates of a selected population, with ", strong('(b)'), " drifting simulations is nessecary to forecast spatial and temporal patterns in the occurrence of jellyfish blooms."),
+                                 h5(p(em(strong("Figure 3."), "Combining seasonal demographic models describing population specific vital rates with drifting simulations is nessecary to forecast spatial and temporal patterns in the occurrence of jellyfish blooms.")),
                                     style = "text-align: center;"),
                                  br())
                           )
@@ -315,7 +315,7 @@ ui <- fluidPage(
                                            p("The GoJelly consortium is also working to promote jellyfish as a valuable resource for the food and feed, and pharmaceutical industries. 
                                               With this work GoJelly aims to encourage the use of jellyfish as a biological fertilizer for organic farming, whilst also developing jellyfish-based products for use in the development of cosmetics, nutraceutics and medicine."),
                                            style = 'text-align: center'),
-                                        br()))),
+                                        br())))
                ),
     # Next insert a tab detailing the user interface components.
     tabPanel(strong("Model Setup"),
