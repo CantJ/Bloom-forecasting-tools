@@ -30,7 +30,7 @@ require("rnaturalearth", quietly = TRUE)
 require("rnaturalearthdata", quietly = TRUE)
 require("scales", quietly = TRUE)
 require('plyr', quietly = TRUE)
-require('ggsn', quietly = TRUE)
+require('ggspatial', quietly = TRUE)
 require('shiny', quietly = TRUE)
 require('shinydashboard', quietly = TRUE)
 require('shinyWidgets', quietly = TRUE)
@@ -76,13 +76,16 @@ siteCoords$Lat <- sites$Lat; siteCoords$Lon <- sites$Lon
 world <- ne_countries(scale = "medium", returnclass = "sf") 
 
 # and plot the release sites.
-sitePlot <- suppressWarnings(ggplot() +
+sitePlot <- quiet(ggplot() +
   geom_sf(data = world, fill = "gray79", colour = "gray47") + 
   geom_sf(aes(fill = Region, col = Region, names = Index, Lat = Lat, Lon = Lon), data = siteCoords, size = 1.8, shape = 21) +
-  coord_sf(xlim = c(xn, xx), ylim = c(yn, yx), expand = FALSE) +
+  
   scale_fill_manual(values = c("black","navy","sandybrown","pink","lightskyblue1","dodgerblue","burlywood3", "cornsilk2"),
                     guide = guide_legend(override.aes = list(size = 10, shape = 22))) +
   scale_color_manual(values = c("black","navy","sandybrown","pink","lightskyblue1","dodgerblue","burlywood3", "cornsilk2")) +
+  ggspatial::annotation_scale(location = "br",
+                              bar_cols = c("grey60", "white")) +
+  coord_sf(xlim = c(xn, xx), ylim = c(yn, yx), expand = FALSE, crs = 4326) +
   theme_classic() +
   theme(legend.position="bottom") +
   theme(legend.title=element_blank()) +
@@ -90,9 +93,7 @@ sitePlot <- suppressWarnings(ggplot() +
   theme(axis.text = element_text(size = 15), axis.title = element_text(size = 20)) +
   theme(legend.text = element_text(size = 15)) +
   xlab("Longitude") +
-  ylab("Latitude") +
-  ggsn::scalebar(data = world, transform = TRUE, dist = 200, dist_unit = "km", model = "WGS84",
-                 height = 0.004, location = "bottomright", st.dist = 0.002, st.bottom = FALSE, anchor = c(x = 32.5, y = 53.5)))
+  ylab("Latitude"))
 
 #----------------------------------------------------
 # STEP 4: DEFINE WEB APP SPECIALIST FUNCTIONS
@@ -427,7 +428,7 @@ ui <- fluidPage(
                            column(2, p(h4(strong("Get in touch today")), style = "text-align: center"),
                                   p(h6(strong("Jamileh Javidpour:"), "jamileh@biology.sdu.dk"), style = "text-align: center"),
                                   p(h6(strong("Owen Jones:"), "jones@biology.sdu.dk"), style = "text-align: center"),
-                                  p(h6(strong("James Cant:"), "jic2@st-andrews.ac.uk"), style = "text-align: center")), 
+                                  p(h6(strong("James Cant:"), "james.cant@biology.ox.ac.uk"), style = "text-align: center")), 
                            column(3, p(h4(strong("Horizon 2020"))),
                                   p(h6("GoJelly was funded by the European Union’s Horizon 2020 research and innovation programme under grant agreement No 774499.")),
                                   br(),
