@@ -97,6 +97,7 @@ JellyPlots$conf
 
 # Resupply the same details to the ParSens arguments as provided to JellySim above, 
 # less a value for zmax and selecting only one of the four release locations
+set.seed(56239)
 JellySens <- ParSens(pars = demogpars, m = m, driftData = SINMOD_data, n_days = nd,
                      xmx = xx, xmn = xn, ymx = yx, ymn = yn, rel_location = sites, rel_months = months, parallel = pl,
                      params = c('P.dens.temp', 'M.surv.temp', 'Growth.slope', 'E.surv.temp', 'No.ephyra.temp'))
