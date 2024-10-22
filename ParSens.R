@@ -17,7 +17,7 @@ ParSens <- function(pars, driftData, n_days, xmx, xmn, ymx, ymn, m, rel_location
                     # It is expected that users would supply these arguments with the same parameters/details as provided to JellySim.
                     # There are three exceptions. Firstly, it is not possible to set multiple sampling iterations for the sensitivities assessments.
                     # Instead, the argument iter allows users to specify a number of repeated runs over which to compute variance in parameter sensitivity allowing for computation of stochastic variance. 
-                    iter = 50, # defaults to 50.
+                    iter,
                     # Next parSens has two additional arguments that allow users to control the extent of their selected sensitivity tests.
                     s = 0.001, # scale of the deviation in parameter values to be imposed. Corresponds with the percentage of change to be imposed in parameter values. Defaults to 0.1%.
                     params = 'all'){ # a vector of the parameter names for which sensitivities should be computed. Defaults to 'all' which sensitivities computed for all available parameters.
@@ -58,7 +58,7 @@ ParSens <- function(pars, driftData, n_days, xmx, xmn, ymx, ymn, m, rel_location
   for(es in 1:length(seedSeq)){
     # Implement baseline simulation with a call to the JellySim function.
     set.seed(es) # fix random number seed across repeated simulations to ensure consistent stochasticity across iterations.
-    BaseSim3 <- quiet(JellySim(pars = pars, driftData = driftData, n_days = n_days, xmx = xmx, xmn = xmn, ymx = ymx, ymn = ymn,
+    BaseSim <- quiet(JellySim(pars = pars, driftData = driftData, n_days = n_days, xmx = xmx, xmn = xmn, ymx = ymx, ymn = ymn,
                               m = m, zmax = 1, rel_location = rel_location, rel_months = rel_months, parallel = parallel))
     
     # Repeat simulation once for each specified parameter after applying a small adjustment to the selected parameter
@@ -99,7 +99,7 @@ ParSens <- function(pars, driftData, n_days, xmx, xmn, ymx, ymn, m, rel_location
   
   # Compute mean sensitivities and their variance across selected parameters. 
   if(any(params == 'all')) { sensVals <- data.frame(Name = names(pars), Sens = colMeans(do.call(rbind, sensList)), sd = sd(do.call(rbind, sensList)))
-  } else { sensVals <- data.frame(Name = params, Sens = colMeans(do.call(rbind, sensList)), sd = apply((do.call(rbind, sensList)), 2, function (x) { sd(x)/sqrt(length((x))) })) }
+  } else { sensVals <- data.frame(Name = params, Sens = colMeans(do.call(rbind, sensList)), sd = sd(do.call(rbind, sensList))) }
   
   # Plot sensitivities
   # Generate plot
@@ -112,7 +112,7 @@ ParSens <- function(pars, driftData, n_days, xmx, xmn, ymx, ymn, m, rel_location
     theme(axis.text.y = element_text(size = 10), axis.text.x = element_text(size = 15), axis.title = element_text(size = 20)) +
     theme(plot.background = element_rect(fill = 'white', color = 'white', linewidth = 0), 
           panel.background = element_rect(fill = 'white', color = 'white')) +
-    xlab("\nSensitivity") +
+    xlab("\nProportional Sensitivity") +
     ylab("Parameter\n") +
     theme(plot.title = element_text(size = 20))
   

@@ -100,8 +100,8 @@ JellyPlots$conf
 set.seed(56239)
 JellySens <- ParSens(pars = demogpars, m = m, driftData = SINMOD_data, n_days = nd,
                      xmx = xx, xmn = xn, ymx = yx, ymn = yn, rel_location = sites, rel_months = months, parallel = pl,
-                     params = c('P.dens.temp', 'M.surv.temp', 'Growth.slope', 'E.surv.temp', 'No.ephyra.temp'))
-                            # Polyp Density, Medusae survival, Medusae growth, Ephyra survival, Number of Ephyra produced.
+                     iter = 20, params = c('P.dens.temp', 'M.surv.temp', 'Growth.slope', 'E.surv.temp', 'No.ephyra.temp'))
+                                       # Polyp Density, Medusae survival, Medusae growth, Ephyra survival, Number of Ephyra produced.
 # Sensitivities
 JellySens$plot
 
