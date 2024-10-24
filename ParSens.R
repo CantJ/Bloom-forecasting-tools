@@ -57,7 +57,7 @@ ParSens <- function(pars, driftData, n_days, xmx, xmn, ymx, ymn, m, rel_location
   sensList <- list()
   for(es in 1:length(seedSeq)){
     # Implement baseline simulation with a call to the JellySim function.
-    set.seed(es) # fix random number seed across repeated simulations to ensure consistent stochasticity across iterations.
+    set.seed(seedSeq[es]) # fix random number seed across repeated simulations to ensure consistent stochasticity across iterations.
     BaseSim <- quiet(JellySim(pars = pars, driftData = driftData, n_days = n_days, xmx = xmx, xmn = xmn, ymx = ymx, ymn = ymn,
                               m = m, zmax = 1, rel_location = rel_location, rel_months = rel_months, parallel = parallel))
     
@@ -68,13 +68,13 @@ ParSens <- function(pars, driftData, n_days, xmx, xmn, ymx, ymn, m, rel_location
       for(ii in 1:length(pars)){
         # impose percentage change to selected parameter
         newpars <- pars # duplicate parameter list
-        newpars[ii] <- newpars[ii] + (newpars[ii] * s)
+        newpars[ii] <- newpars[ii] + (abs(newpars[ii]) * s)
         # Re-run simulation
         set.seed(seedSeq[es]) # reset random number seed.
         sensSim <- quiet(JellySim(pars = newpars, driftData = driftData, n_days = n_days, xmx = xmx, xmn = xmn, ymx = ymx, ymn = ymn,
                                   m = m, zmax = 1, rel_location = rel_location, rel_months = rel_months, parallel = parallel))
         # Compute sensitivity
-        sensVals[ii] <- sum(values(sensSim$mean) - values(BaseSim$mean))
+        sensVals[ii] <- sum(values(sensSim$mean) - values(BaseSim$mean))/(newpars[ii]-pars[ii])
       }
       # Store iteration output
       sensList[[es]] <- sensVals
@@ -84,13 +84,13 @@ ParSens <- function(pars, driftData, n_days, xmx, xmn, ymx, ymn, m, rel_location
       for(ii in 1:length(params)){
         # impose percentage change to selected parameter
         newpars <- pars # duplicate parameter list
-        newpars[params[ii]] <- newpars[params[ii]] + (newpars[params[ii]] * s) 
+        newpars[params[ii]] <- newpars[params[ii]] + (abs(newpars[params[ii]]) * s) 
         # Re-run simulation
         set.seed(seedSeq[es]) # reset random number seed.
         sensSim <- quiet(JellySim(pars = newpars, driftData = driftData, n_days = n_days, xmx = xmx, xmn = xmn, ymx = ymx, ymn = ymn,
                                   m = m, zmax = 1, rel_location = rel_location, rel_months = rel_months, parallel = parallel))
         # Compute sensitivity
-        sensVals[ii] <- sum(values(sensSim$mean) - values(BaseSim$mean))
+        sensVals[ii] <- sum(values(sensSim$mean) - values(BaseSim$mean))/(newpars[params[ii]]-pars[params[ii]])
       }
       # Store iteration output
       sensList[[es]] <- sensVals
@@ -98,14 +98,14 @@ ParSens <- function(pars, driftData, n_days, xmx, xmn, ymx, ymn, m, rel_location
   }
   
   # Compute mean sensitivities and their variance across selected parameters. 
-  if(any(params == 'all')) { sensVals <- data.frame(Name = names(pars), Sens = colMeans(do.call(rbind, sensList)), sd = sd(do.call(rbind, sensList)))
-  } else { sensVals <- data.frame(Name = params, Sens = colMeans(do.call(rbind, sensList)), sd = sd(do.call(rbind, sensList))) }
+  if(any(params == 'all')) { sensVals <- data.frame(Name = names(pars), Sens = colMeans(do.call(rbind, sensList)), sd = apply(do.call(rbind, sensList), 2, sd))
+  } else { sensVals <- data.frame(Name = params, Sens = colMeans(do.call(rbind, sensList)), sd = apply(do.call(rbind, sensList), 2, sd)) }
   
   # Plot sensitivities
   # Generate plot
   sensPlot <- ggplot(data = sensVals, aes(x = Sens, y = Name)) +
     geom_col(width = 0.6, fill = '#2C2D7C') +
-    geom_errorbar(aes(y = Name, xmin = Sens - sd, xmax = Sens + sd), data = sensVals) +
+    geom_errorbar(aes(y = Name, xmin = Sens - sd, xmax = Sens + sd), data = sensVals, width = 0.2) +
     geom_vline(aes(xintercept = 0), linetype = 'dashed', linewidth = 1.2, col = '#DC9257') +
     theme_classic() +
     theme(axis.line.x = element_line(linewidth = 1), axis.line.y = element_line(linewidth = 1)) +
